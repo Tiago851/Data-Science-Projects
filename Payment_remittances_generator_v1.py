@@ -26,6 +26,9 @@ abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
 os.chdir(dname)
 
+#Shutting down all Excel applications to make sure the script runs correctly
+os.system('taskkill /F /IM excel.exe')
+
 #Finding
 def find():
     for root, dirs, files in os.walk(os.getcwd()):
@@ -137,6 +140,15 @@ def payment_generator():
         wb.close()
         
         app = xw.App(visible = False)
+        
+        #The error handling here is necessary as the xw.Book may file if the source file is transferred to the same folder
+        #as the script
+        try: 
+            book = xw.Book(fullname=files).sheets[1]
+        except OSError:
+            os.system('taskkill /F /IM excel.exe')
+        finally:
+            book = xw.Book(fullname=files).sheets[1]
         
         book = xw.Book(fullname=files).sheets[1]
         
